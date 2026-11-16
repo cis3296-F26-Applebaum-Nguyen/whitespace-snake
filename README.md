@@ -32,12 +32,12 @@ List required hardware, software, services, data, and specialist knowledge.
 
 ## Contributors
 
-Yonas Shah
-Matthew Brennan
-Donavan Jones
-Gaurab Ghimire
-Hong zou
-Maxamillion DiFrancesco
+-Yonas Shah
+-Matthew Brennan
+-Donavan Jones
+-Gaurab Ghimire
+-Hong zou
+-Maxamillion DiFrancesco
 
 
 ## Initial Set-up
