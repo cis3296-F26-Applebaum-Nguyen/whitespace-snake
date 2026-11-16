@@ -32,7 +32,12 @@ List required hardware, software, services, data, and specialist knowledge.
 
 ## Contributors
 
-List team members and link their GitHub profiles.
+Yonas Shah
+Matthew Brennan
+Donavan Jones
+Gaurab Ghimire
+Hong zou
+Maxamillion DiFrancesco
 
 
 ## Initial Set-up
