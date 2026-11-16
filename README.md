@@ -33,3 +33,12 @@ List required hardware, software, services, data, and specialist knowledge.
 ## Contributors
 
 List team members and link their GitHub profiles.
+
+
+## Initial Set-up
+
+1. Open Google Chrome and go to chrome://extensions/.
+2. Toggle Developer mode on in the top-right corner.
+3. Click the Load unpacked button.
+4. Select your project folder.
+5. Click your new extension icon in the toolbar to test it
