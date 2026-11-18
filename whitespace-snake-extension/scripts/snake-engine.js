@@ -209,6 +209,33 @@
             const h = typeof window !== "undefined" ? window.innerHeight : Infinity;
             return x >= 0 && y >= 0 && x + size <= w && y + size <= h;
         }
+        
+        /**
+         * Choose a random playable grid position that is not occupied by the snake.
+         * Call after construction and again when an apple is eaten.
+         * @param {{width?:number, height?:number, random?:()=>number}} [opts]
+         *        Bounds default to the browser viewport; pass them explicitly outside a browser.
+         * @returns {{x:number,y:number,size:number}|null} null when no position is available.
+         */
+        spawnApple({ width, height, random = Math.random } = {}) {
+            if (width == null) width = typeof window !== "undefined" ? window.innerWidth : 0;
+            if (height == null) height = typeof window !== "undefined" ? window.innerHeight : 0;
+
+            const size = this.segmentSize;
+            if (width < size || height < size) return null;
+
+            const positions = [];
+            for (let y = 0; y + size <= height; y += size) {
+                for (let x = 0; x + size <= width; x += size) {
+                    if (this.isPlayable(x, y, size) && !this.hitsBody(x, y, { size })) {
+                        positions.push({ x, y, size });
+                    }
+                }
+            }
+
+            if (!positions.length) return null;
+            return positions[Math.floor(random() * positions.length)];
+        }
     }
 
     SnakeEngine.DIRECTIONS = Object.freeze(Object.keys(DIRECTIONS));
