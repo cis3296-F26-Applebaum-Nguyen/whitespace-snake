@@ -9,11 +9,14 @@
  * so the pixel map / game board can be swapped without touching this file.
  *
  * Usage:
+ *   let apple;
  *   const snake = new SnakeEngine({
  *     x: 200, y: 200,
  *     segmentSize: 10,
  *     isPlayable: (x, y, size) => pixelMap.isWhiteArea(x, y, size), // from the board/pixel-map code
+ *     getApple: () => apple, // the caller owns the apple state
  *   });
+ *   apple = snake.spawnApple();
  *   document.addEventListener("keydown", (e) => {
  *     const dir = SnakeEngine.keyToDirection(e.key);
  *     if (dir) { snake.setDirection(dir); e.preventDefault(); }
@@ -21,7 +24,9 @@
  *   const timer = setInterval(() => {
  *     const result = snake.tick();
  *     if (!result.alive) clearInterval(timer);   // result.reason: "blocked" | "self"
+ *     if (result.ateApple) apple = snake.spawnApple();
  *     draw(snake.getSegments());
+ *     // Render `apple` separately; the engine does not store or draw it.
  *   }, 100);
  */
 (function (root) {
@@ -55,6 +60,8 @@
          * @param {(x:number, y:number, size:number) => boolean} [opts.isPlayable]
          *        Returns true if the square at (x, y) with side `size` is free to move into.
          *        Defaults to "everything inside the window is playable".
+         * @param {()=>({x:number,y:number,size?:number}|null)} [opts.getApple]
+         *        Returns the caller-owned apple's current position, or null if none exists.
          */
         constructor(opts = {}) {
             this.segmentSize = opts.segmentSize ?? 10;
