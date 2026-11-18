@@ -71,3 +71,17 @@ test("keyToDirection handles arrows and WASD", () => {
     assert.strictEqual(SnakeEngine.keyToDirection("d"), "right");
     assert.strictEqual(SnakeEngine.keyToDirection("x"), null);
 });
+
+test("eating an apple grows the snake on that tick", () => {
+    const apple = { x: 110, y: 100 };
+    const s = new SnakeEngine({ x: 100, y: 100, initialLength: 3, isPlayable: open, getApple: () => apple });
+    const r = s.tick();
+    assert.strictEqual(r.ateApple, true);
+    assert.strictEqual(s.length, 4);
+});
+test("no apple in the way means no growth", () => {
+    const s = new SnakeEngine({ x: 100, y: 100, initialLength: 3, isPlayable: open, getApple: () => ({ x: 500, y: 500 }) });
+    const r = s.tick();
+    assert.strictEqual(r.ateApple, false);
+    assert.strictEqual(s.length, 3);
+});
