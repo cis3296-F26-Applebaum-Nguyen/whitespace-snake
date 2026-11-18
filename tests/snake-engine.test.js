@@ -85,3 +85,22 @@ test("no apple in the way means no growth", () => {
     assert.strictEqual(r.ateApple, false);
     assert.strictEqual(s.length, 3);
 });
+
+test("spawns an apple on a playable grid position", () => {
+    const s = new SnakeEngine({
+        x: 10,
+        y: 10,
+        initialLength: 1,
+        segmentSize: 10,
+        isPlayable: (x, y) => x === 20 && y === 0,
+    });
+
+    assert.deepStrictEqual(s.spawnApple({ width: 30, height: 20, random: () => 0 }), {
+        x: 20, y: 0, size: 10,
+    });
+});
+
+test("returns null when no playable apple position is available", () => {
+    const s = new SnakeEngine({ x: 10, y: 10, isPlayable: () => false });
+    assert.strictEqual(s.spawnApple({ width: 100, height: 100 }), null);
+});
