@@ -9,11 +9,14 @@
  * so the pixel map / game board can be swapped without touching this file.
  *
  * Usage:
+ *   let apple;
  *   const snake = new SnakeEngine({
  *     x: 200, y: 200,
  *     segmentSize: 10,
  *     isPlayable: (x, y, size) => pixelMap.isWhiteArea(x, y, size), // from the board/pixel-map code
+ *     getApple: () => apple, // the caller owns the apple state
  *   });
+ *   apple = snake.spawnApple();
  *   document.addEventListener("keydown", (e) => {
  *     const dir = SnakeEngine.keyToDirection(e.key);
  *     if (dir) { snake.setDirection(dir); e.preventDefault(); }
@@ -21,7 +24,9 @@
  *   const timer = setInterval(() => {
  *     const result = snake.tick();
  *     if (!result.alive) clearInterval(timer);   // result.reason: "blocked" | "self"
+ *     if (result.ateApple) apple = snake.spawnApple();
  *     draw(snake.getSegments());
+ *     // Render `apple` separately; the engine does not store or draw it.
  *   }, 100);
  */
 (function (root) {
@@ -55,6 +60,8 @@
          * @param {(x:number, y:number, size:number) => boolean} [opts.isPlayable]
          *        Returns true if the square at (x, y) with side `size` is free to move into.
          *        Defaults to "everything inside the window is playable".
+         * @param {()=>({x:number,y:number,size?:number}|null)} [opts.getApple]
+         *        Returns the caller-owned apple's current position, or null if none exists.
          */
         constructor(opts = {}) {
             this.segmentSize = opts.segmentSize ?? 10;
@@ -208,6 +215,33 @@
             const w = typeof window !== "undefined" ? window.innerWidth : Infinity;
             const h = typeof window !== "undefined" ? window.innerHeight : Infinity;
             return x >= 0 && y >= 0 && x + size <= w && y + size <= h;
+        }
+        
+        /**
+         * Choose a random playable grid position that is not occupied by the snake.
+         * Call after construction and again when an apple is eaten.
+         * @param {{width?:number, height?:number, random?:()=>number}} [opts]
+         *        Bounds default to the browser viewport; pass them explicitly outside a browser.
+         * @returns {{x:number,y:number,size:number}|null} null when no position is available.
+         */
+        spawnApple({ width, height, random = Math.random } = {}) {
+            if (width == null) width = typeof window !== "undefined" ? window.innerWidth : 0;
+            if (height == null) height = typeof window !== "undefined" ? window.innerHeight : 0;
+
+            const size = this.segmentSize;
+            if (width < size || height < size) return null;
+
+            const positions = [];
+            for (let y = 0; y + size <= height; y += size) {
+                for (let x = 0; x + size <= width; x += size) {
+                    if (this.isPlayable(x, y, size) && !this.hitsBody(x, y, { size })) {
+                        positions.push({ x, y, size });
+                    }
+                }
+            }
+
+            if (!positions.length) return null;
+            return positions[Math.floor(random() * positions.length)];
         }
     }
 
