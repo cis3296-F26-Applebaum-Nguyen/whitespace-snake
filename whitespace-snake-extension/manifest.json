@@ -1,0 +1,16 @@
+{
+  "name": "Whitespace Snake Game Extension",
+  "description": "A snake game right on your webpage!",
+  "version": "1.0",
+  "manifest_version": 3,
+  "action": {
+    "default_popup": "popup/popup.html",
+    "default_icon": "images/white_snake_icon.png"
+  },
+  "icons": {
+    "16": "images/white_snake_icon.png",
+    "32": "images/white_snake_icon.png",
+    "48": "images/white_snake_icon.png",
+    "128": "images/white_snake_icon.png"
+  }
+}
