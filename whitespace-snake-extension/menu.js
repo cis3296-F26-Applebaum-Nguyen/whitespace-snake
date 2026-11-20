@@ -11,7 +11,7 @@
 
   //Independent State
   const state = {
-    gameStatus: 'RUNNING', // 'RUNNING' | 'PAUSED' | 'OVER'
+    gameStatus: 'READY', // 'READY' | 'RUNNING' | 'PAUSED' | 'OVER'
     isVisible: true,
     tickCount: 0,
     loopId: null,
@@ -33,6 +33,7 @@
       <canvas id="snake-canvas" width="300" height="300"></canvas>
       <div id="snake-pause-overlay" class="is-hidden">
         <h3 id="snake-pause-title">PAUSED</h3>
+        <button id="snake-start-btn" class="snake-btn" type="button">Start</button>
       </div>
     </div>
   `;
@@ -44,6 +45,7 @@
   const closeBtn = document.getElementById('snake-close-btn');
   const pauseOverlay = document.getElementById('snake-pause-overlay');
   const pauseTitleEl = document.getElementById('snake-pause-title');
+  const startBtn = document.getElementById('snake-start-btn');
   const canvas = document.getElementById('snake-canvas');
   const ctx = canvas.getContext('2d');
 
@@ -88,7 +90,7 @@
   }
 
   function pauseGame() {
-    if (state.gameStatus === 'OVER') return;
+    if (state.gameStatus !== 'RUNNING') return;
     state.gameStatus = 'PAUSED';
     stopLoop();
     syncUI();
@@ -134,18 +136,16 @@
   function syncUI() {
     root.classList.toggle('is-hidden', !state.isVisible);
 
+    const isReady = state.gameStatus === 'READY';
     const isPaused = state.gameStatus === 'PAUSED';
     const isOver = state.gameStatus === 'OVER';
-    const showOverlay = isPaused || isOver;
 
-    pauseOverlay.classList.toggle('is-hidden', !showOverlay);
+    pauseOverlay.classList.toggle('is-hidden', !(isReady || isPaused || isOver));
+    startBtn.classList.toggle('is-hidden', !isReady);
+    togglePauseBtn.classList.toggle('is-hidden', isReady);
 
-    if(isOver){
-        pauseTitleEl.textContent = 'GAME OVER';
-        togglePauseBtn.textContent = 'Respawn';
-    }else{
-        togglePauseBtn.textContent = isPaused ? 'Resume' : 'Pause';
-    }
+    pauseTitleEl.textContent = isReady ? 'WHITESPACE SNAKE' : isOver ? 'GAME OVER' : 'PAUSED';
+    togglePauseBtn.textContent = isOver ? 'Respawn' : isPaused ? 'Resume' : 'Pause';
     tickEl.textContent = state.tickCount;
   }
 
@@ -189,6 +189,8 @@
     }
   });
 
+  startBtn.addEventListener('click', resumeGame);
+
   closeBtn.addEventListener('click', () => {
     hideContainer();
   });
@@ -199,12 +201,8 @@
         state.isVisible = true;
         if (state.gameStatus === 'OVER') {
           respawnGame();
-        } else if (state.gameStatus === 'PAUSED') {
-          resumeGame();
         } else {
-          syncUI();
-          render();
-          startLoop();
+          resumeGame(); // starts from READY, resumes from PAUSED, no-op if RUNNING
         }
       }
     });
@@ -237,7 +235,7 @@
       } else if (isPauseKey) {
         if (state.gameStatus === 'RUNNING') {
           pauseGame();
-        } else if (state.gameStatus === 'PAUSED') {
+        } else if (state.gameStatus === 'PAUSED' || state.gameStatus === 'READY') {
           resumeGame();
         }
       }
@@ -246,7 +244,7 @@
   );
 
   // Boot
+  // Boot: wait for Start
   render();
   syncUI();
-  startLoop();
 })();
