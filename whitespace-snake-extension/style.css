@@ -98,3 +98,6 @@
   font-size: 18px;
   letter-spacing: 0.5px;
 }
+#snake-ext-root .is-hidden {
+  display: none;
+}
