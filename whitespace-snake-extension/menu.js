@@ -7,6 +7,7 @@
   }
 
   const SEGMENT_SIZE = 15;
+  const HUD_HEIGHT = 40; // px
 
   //Independent State
   const state = {
@@ -48,7 +49,13 @@
 
   //SnakeEngine Setup
   let apple = null;
-  const boardSize = { width: canvas.width, height: canvas.height };
+  
+  // Fill the viewport, snapped to the segment grid
+  const boardSize = { width: 0, height: 0 };
+  canvas.width = Math.floor(root.clientWidth / SEGMENT_SIZE) * SEGMENT_SIZE;
+  canvas.height = Math.floor((root.clientHeight - HUD_HEIGHT) / SEGMENT_SIZE) * SEGMENT_SIZE;
+  boardSize.width = canvas.width;
+  boardSize.height = canvas.height;
 
   const snake = new window.SnakeEngine({
     x: SEGMENT_SIZE * 4,
