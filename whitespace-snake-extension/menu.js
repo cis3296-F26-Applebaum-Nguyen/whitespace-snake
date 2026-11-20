@@ -128,9 +128,11 @@
     pauseOverlay.classList.toggle('is-hidden', !showOverlay);
 
     if(isOver){
-        pauseTitleEl.textContent = 'GAME OVER';
+        pauseTitleEl.textContent ='Game Over';
         togglePauseBtn.textContent = 'Respawn';
+
     }else{
+        pauseTitleEl.textContent ='Paused';  
         togglePauseBtn.textContent = isPaused ? 'Resume' : 'Pause';
     }
     tickEl.textContent = state.tickCount;
@@ -164,7 +166,7 @@
   togglePauseBtn.addEventListener('click', () => {
     if (state.gameStatus === 'OVER') {
       respawnGame();
-    } else if (state.gameStatus === 'RUNNING') {
+    }else if (state.gameStatus === 'RUNNING') {
         pauseGame();
     }else{
         resumeGame();
