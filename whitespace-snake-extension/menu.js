@@ -7,6 +7,7 @@
   }
 
   const SEGMENT_SIZE = 15;
+  const HUD_HEIGHT = 40; // px
 
   //Independent State
   const state = {
@@ -47,6 +48,15 @@
   const ctx = canvas.getContext('2d');
 
   //SnakeEngine Setup
+  let apple = null;
+  
+  // Fill the viewport, snapped to the segment grid
+  const boardSize = { width: 0, height: 0 };
+  canvas.width = Math.floor(root.clientWidth / SEGMENT_SIZE) * SEGMENT_SIZE;
+  canvas.height = Math.floor((root.clientHeight - HUD_HEIGHT) / SEGMENT_SIZE) * SEGMENT_SIZE;
+  boardSize.width = canvas.width;
+  boardSize.height = canvas.height;
+
   const snake = new window.SnakeEngine({
     x: SEGMENT_SIZE * 4,
     y: SEGMENT_SIZE * 6,
@@ -54,8 +64,10 @@
     initialLength: 4,
     direction: 'right',
     isPlayable: (x, y, size) =>
-      x >= 0 && y >= 0 && x + size <= canvas.width && y + size <= canvas.height
+      x >= 0 && y >= 0 && x + size <= canvas.width && y + size <= canvas.height,
+    getApple: () => apple
   });
+  apple = snake.spawnApple(boardSize);
 
   //Lifecycle & Loop Management
   function startLoop() {
@@ -91,6 +103,7 @@
   
   function respawnGame() {
     snake.reset();
+    apple = snake.spawnApple(boardSize);
     state.tickCount = 0;
     state.gameStatus = 'RUNNING';
     stopLoop();
@@ -140,6 +153,7 @@
 
   function tick() {
     const result = snake.tick();
+    if (result.ateApple) apple = snake.spawnApple(boardSize);
     state.tickCount += 1;
     tickEl.textContent = state.tickCount;
 
@@ -159,6 +173,10 @@
       ctx.fillStyle = index === 0 ? '#4ade80' : '#22c55e';
       ctx.fillRect(seg.x, seg.y, SEGMENT_SIZE - 1, SEGMENT_SIZE - 1);
     });
+    if (apple) {
+      ctx.fillStyle = '#ef4444';
+      ctx.fillRect(apple.x, apple.y, SEGMENT_SIZE - 1, SEGMENT_SIZE - 1);
+    }
 
   }
 
